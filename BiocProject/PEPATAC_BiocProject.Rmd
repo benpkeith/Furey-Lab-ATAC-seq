@@ -1,0 +1,55 @@
+---
+title: "PEPATAC BiocProject"
+author: "Michal Stolarczyk"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{PEPATAC BiocProject}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+
+Before you start see the [Getting started with `BiocProject` vignette](http://code.databio.org/BiocProject/articles/vignette1getStarted.html) for the basic `BiocProject` information and installation instructions and [`PEPATAC` website](http://pepatac.databio.org) for information regarding this ATAC-seq pipeline.
+
+`BiocProject` provides a slick way of reading in the outputs of the pipeline listed in the `outputs` section of its [pipeline interface](http://code.databio.org/looper/pipeline-interface/). 
+
+__With a single line of code you can read all the indicated results and your project metadata.__
+
+# Read the results of `PEPATAC` run
+
+The function shown below reads in the `BED` files from the `output` section specified in the [`PEPATAC` pipeline interface](https://github.com/databio/pepatac/blob/master/pipeline_interface.yaml).
+
+The way the output files are read is defined in a [function](https://github.com/databio/pepatac/blob/master/BiocProject/readPepatacPeakBeds.R) supplied by the `PEPATAC` developers. The function listed in `bioconductor` section of `PEPATAC` pipeline interface file is identified by `BiocProject` function, sourced and automatically executed on samples matching the protocols bound to the pipeline specified as an argument in [`outputsByPipeline`](http://code.databio.org/BiocProject/reference/outputsByPipeline.html) function.
+
+## Get the project config
+
+```{r echo=T, message=FALSE}
+library(BiocProject)
+ProjectConfig = "gold_hg19.yaml"
+```
+
+## Run the `BiocProject` function
+
+```{r}
+bp = BiocProject(ProjectConfig)
+```
+
+As you can see in the message above, the `readPepatacPeakBeds` function was sourced from the file indicated in the `PEPATAC` pipeline interface.
+
+## Browse the results
+
+The read data is conveninetly stored in a `List` object with ([`pepr::Project`](http://code.databio.org/pepr/reference/Project-class.html) object in its metadata slot:
+
+```{r}
+bp
+```
