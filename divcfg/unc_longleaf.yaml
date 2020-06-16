@@ -1,0 +1,12 @@
+compute_packages:
+  default:
+    submission_template: templates/slurm_template_unc.sub
+    submission_command: sbatch
+    partition: general
+  bigmem:
+    submission_template: templates/slurm_template_unc.sub
+    submission_command: sbatch
+    partition: general_big
+  local:
+    submission_template: templates/localhost_template.sub
+    submission_command: sh
