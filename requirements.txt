@@ -1,8 +1,0 @@
-loopercli
-MACS2
-numpy
-pararead
-pandas
-piper
-refgenconf>=0.7.0
-refgenie
