@@ -1,0 +1,17 @@
+# PEPATAC 0.9 post-processing pipeline
+
+genomeBuild: hg19
+
+# This is assuming that these are the names of the directories within "results_pipeline"
+samples:
+  - 185
+  - 187
+  - 206
+  - 208
+
+# Conditions order must match the order of the above samples
+conditions:
+  - CD
+  - CD
+  - NIBD
+  - NIBD
