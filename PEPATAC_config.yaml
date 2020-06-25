@@ -32,6 +32,7 @@ sample_modifiers:
         frip_ref_peaks: None     # Default. Use an external reference set of peaks instead of the peaks called from this run
         blacklist: $GENOMES/hg38/blacklist/default/hg38_blacklist.bed.gz
         motif: TRUE
+        no_scale: TRUE       
     - if:
         organism: ["mouse", "Mus muculus", "Mouse", "Mus_musculus"]
       then:
@@ -45,3 +46,4 @@ sample_modifiers:
         frip_ref_peaks: None     # Default. Use an external reference set of peaks instead of the peaks called from this run
         blacklist: $GENOMES/mm10/blacklist/default/mm10_blacklist.bed.gz
         motif: TRUE
+        no_scale: TRUE

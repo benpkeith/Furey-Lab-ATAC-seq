@@ -23,7 +23,6 @@ export CODE='/proj/fureylab/pipelines/ATAC/pepatac_0.9.0'
 export CODEBASE='/proj/fureylab/pipelines/ATAC/pepatac_0.9.0/tools'
 export PEPENV='/proj/fureylab/pipelines/ATAC/pepatac_0.9.0/pipelines/pepatac.yaml'
 export DIVCFG='/proj/fureylab/pipelines/ATAC/pepatac_0.9.0/divcfg/unc_divvy_config.yaml'
-export REFGENIE='/proj/fureylab/genomes/genome_config.yaml'
 
 # Loading the correct genome according to 1st argument
 if [ "$genome" = "human" ]

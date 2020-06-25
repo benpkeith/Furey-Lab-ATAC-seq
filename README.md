@@ -7,6 +7,7 @@ Assuming you have your config and annotation file set up, all you'll need to do 
 
 ```
 git clone https://sc.unc.edu/dept-fureylab/atac_pepatac.git
+cd atac_pepatac
 source PEPATACenv.sh human
 looper run /path/to/PEPATAC_config.yaml
 ```
@@ -91,5 +92,62 @@ or to see how jobs are running on SLURM directly:
 ```
 squeue -u ONYEN
 ```
+
+## QC and moving files
+
+##### Checking and resubmitting
+
+Once all jobs have finished, check to see whether all jobs have finished using:
+
+```
+looper check PEPATAC_config.yaml
+```
+
+You should see 0 failed jobs. In the event that you do see failed jobs, you can use the command:
+
+```
+looper rerun PEPATAC_config.yaml
+```
+
+to resubmit those jobs that failed. **You will not have to delete any files and the pipeline will not resubmit any samples that finished successfully**.
+
+##### Producing QC stats tables and html outputs
+
+To create a QC metadata table along with html outputs summarizing QC across samples in the run, you will need to use the command:
+
+```
+looper report PETATAC_config.yaml
+```
+
+One of the files that is output from this step, _"[analysisName]stats_summary.tsv"_ is used by the script that handles the copying of files to permanent space.
+
+##### Moving files to permanent space
+
+To move your files from scratch space to the data directory, you can use the script _pepatacPostMove.py_, which is located in the labs' bin directory. The script takes 3/4 arguments:
+
+- The stats.summary.tsv files generated from the "looper report" step
+- A column that points to where the fastq files are located (This will almost always be 'read1')
+- The genome build used in this run
+- the flag '--run' when you're ready to initiate copying
+
+Before we potentially copy over TBs of data, lets make sure the copy commands look right by **not** including the '--run' flag.
+
+```
+module load python/3.6.6
+python /proj/fureylab/bin/pepatacPostMove.py -i samples_stats_summary.tsv -r read1 -g hg38
+```
+
+This will print the commands that would be executed if the '--run' flag was added. When everything looks good, add '--run':
+
+```
+python /proj/fureylab/bin/pepatacPostMove.py -i samples_stats_summary.tsv -r read1 -g hg38 --run
+```
+
+If you need more information about how to format the command or the inputs you need, you can use the command:
+
+```
+python /proj/fureylab/bin/pepatacPostMove.py -h
+```
+
 
 FURTHER DOCUMENTATION TO COME! -Ben
