@@ -61,3 +61,11 @@ module load homer/4.10
 
 echo "MODULES LOADED:"
 module list
+
+if (($# == 0)); then
+  echo "#########################################################"
+  echo "### No arguments entered, rerun this command entering ###"
+  echo "############ either 'mouse' or 'human' before ###########" 
+  echo "############## proceeding with the pipeline #############"
+  echo "#########################################################"
+fi
