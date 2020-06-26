@@ -97,6 +97,8 @@ squeue -u ONYEN
 
 ##### Checking and resubmitting
 
+As a reminder, to use any looper commands you need all the module and environmental variables loaded. If you have logged out of longleaf since running or submitting looper commands, make sure to rerun the "source" command for _PEPATACenv.sh_.
+
 Once all jobs have finished, check to see whether all jobs have finished using:
 
 ```
