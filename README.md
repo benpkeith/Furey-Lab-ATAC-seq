@@ -121,9 +121,11 @@ To create a QC metadata table along with html outputs summarizing QC across samp
 looper report PETATAC_config.yaml
 ```
 
+There will be a number of files that cannot be generated during this step, meaning that you'll get the message _Not found_ at the end of running this command. **This is normal** and is due to the R script used during section not being fully completed.
+
 One of the files that is output from this step, _"[analysisName]stats_summary.tsv"_ is used by the script that handles the copying of files to permanent space.
 
-##### Moving files to permanent space
+##### Copying files to permanent space
 
 To move your files from scratch space to the data directory, you can use the script _pepatacPostMove.py_, which is located in the labs' bin directory. The script takes 3/4 arguments:
 
