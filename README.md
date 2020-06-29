@@ -138,13 +138,13 @@ Before we potentially copy over TBs of data, lets make sure the copy commands lo
 
 ```
 module load python/3.6.6
-python /proj/fureylab/bin/pepatacPostMove.py -i samples_stats_summary.tsv -r read1 -g hg38
+python /proj/fureylab/bin/pepatacPostMove.py -i [analysisName]stats_summary.tsv -r read1 -g hg38
 ```
 
 This will print the commands that would be executed if the '--run' flag was added. When everything looks good, add '--run':
 
 ```
-python /proj/fureylab/bin/pepatacPostMove.py -i samples_stats_summary.tsv -r read1 -g hg38 --run
+python /proj/fureylab/bin/pepatacPostMove.py -i [analysisName]stats_summary.tsv -r read1 -g hg38 --run
 ```
 
 If you need more information about how to format the command or the inputs you need, you can use the command:
@@ -158,7 +158,7 @@ python /proj/fureylab/bin/pepatacPostMove.py -h
 ```
 module load python/3.6.6
 sbatch -o sampleMove.out -t 1-0 --wrap="/proj/fureylab/bin/pepatacPostMove.py \
--i samples_stats_summary.tsv -r read1 -g hg38 --run"
+-i [analysisName]stats_summary.tsv -r read1 -g hg38 --run"
 ```
 
 FURTHER DOCUMENTATION TO COME! -Ben
