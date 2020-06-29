@@ -153,5 +153,12 @@ If you need more information about how to format the command or the inputs you n
 python /proj/fureylab/bin/pepatacPostMove.py -h
 ```
 
+**NOTE:** When processing 10+ samples through this command, submit this command through SLURM as it may take a little while to run. This could be formatted like the below command:
+
+```
+module load python/3.6.6
+sbatch -o sampleMove.out -t 1-0 --wrap="/proj/fureylab/bin/pepatacPostMove.py \
+-i samples_stats_summary.tsv -r read1 -g hg38 --run"
+```
 
 FURTHER DOCUMENTATION TO COME! -Ben
