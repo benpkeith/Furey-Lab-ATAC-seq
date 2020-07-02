@@ -1,6 +1,21 @@
 # PEPATAC 0.9 post-processing pipeline
 
-genomeBuild: hg19
+projectName: DATE_project_name
+# If running immediately after PEPATAC, this should be the same as "name" in the
+# PEPTAC_config.yaml file
+
+genomeBuild: hg38
+
+post-pipeline: TRUE
+# TRUE is run immediately running after PEPATAC.
+# If TRUE, samples should consist of sample numbers.
+# If FALSE, samples consist of paths to sample PEPATAC directories.
+
+sampleCutoff: 0.5
+
+moveOut: FALSE
+# Only set to TRUE after the post-processing pipeline has been run successfully!
+projectDir: "/proj/fureylab/projects/ATAC_processing"
 
 # This is assuming that these are the names of the directories within "results_pipeline"
 samples:
@@ -9,9 +24,19 @@ samples:
   - 206
   - 208
 
-# Conditions order must match the order of the above samples
+# # Conditions order must match the order of the above samples
 conditions:
   - CD
   - CD
   - NIBD
   - NIBD
+
+# If processing samples already saved in the data directory, point to the
+# sample directory like below.
+# samples:
+#   - /proj/fureylab/data/ATAC/human/colon_tissue/CD_uninflamed/17_0236_031
+#   - /proj/fureylab/data/ATAC/human/colon_tissue/CD_uninflamed/17_0236_033
+#   - /proj/fureylab/data/ATAC/human/colon_tissue/CD_uninflamed/17_0236_052
+#   - /proj/fureylab/data/ATAC/human/colon_tissue/nonIBD/17_0236_017
+#   - /proj/fureylab/data/ATAC/human/colon_tissue/nonIBD/17_0236_019
+#   - /proj/fureylab/data/ATAC/human/colon_tissue/nonIBD/17_0236_021

@@ -1,0 +1,47 @@
+{
+    "__default__":
+    {
+        "mem": "10G",
+        "time": "5:0:0",
+        "ntasks": "1",
+        "output": "post-processing/logs/{wildcards.sample}/{rule}.out",
+        "err": "post-processing/logs/{wildcards.sample}/{rule}.err",
+        "jobname": "{rule}"
+    },
+    "fixBed":
+    {
+        "mem": "10G",
+        "time": "5:0:0",
+        "ntasks": "1",
+        "output": "post-processing/logs/{wildcards.sample}/{rule}.out",
+        "err": "post-processing/logs/{wildcards.sample}/{rule}.err",
+        "jobname": "{rule}"
+    },
+    "conditionPeakSets":
+    {
+        "mem": "10G",
+        "time": "5:0:0",
+        "ntasks": "1",
+        "output": "post-processing/logs/{wildcards.condition}.{rule}.out",
+        "err": "post-processing/logs/{wildcards.condition}.{rule}.err",
+        "jobname": "{rule}"
+    },
+    "finalPeakSets":
+    {
+        "mem": "10G",
+        "time": "5:0:0",
+        "ntasks": "1",
+        "output": "post-processing/logs/{rule}.out",
+        "err": "post-processing/logs/{rule}.err",
+        "jobname": "{rule}"
+    },
+    "countMatrix":
+    {
+        "mem": "10G",
+        "time": "5:0:0",
+        "ntasks": "1",
+        "output": "post-processing/logs/{rule}.out",
+        "err": "post-processing/logs/{rule}.err",
+        "jobname": "{rule}"
+    }
+}
