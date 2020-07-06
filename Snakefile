@@ -48,8 +48,8 @@ if config["moveOut"]:
               (projectDir, projectDir, projectDir, configFilename, projectDir))
 
     if config["post-pipeline"]:
-        os.system("cp -rf %s* %s" % (projectName, projectDir))
-        os.system("cp -rf submission %s/PEPATAC_submission")
+        os.system("cp -rf %s* %s" % (config["projectName"], projectDir))
+        os.system("cp -rf submission %s/PEPATAC_submission" % projectDir)
 
     print("Files moved! Exiting...")
     print("The SystemExit message below this is normal!")
