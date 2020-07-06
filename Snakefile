@@ -47,7 +47,7 @@ if config["moveOut"]:
               cp %s %s" % \
               (projectDir, projectDir, projectDir, configFilename, projectDir))
 
-    if config["post-pipeline"]:
+    if config["post-PEPATAC"]:
         os.system("cp -rf %s* %s" % (config["projectName"], projectDir))
         os.system("cp -rf submission %s/PEPATAC_submission" % projectDir)
 
@@ -56,7 +56,7 @@ if config["moveOut"]:
     sys.exit()
 
 for i in range(0,len(samples)):
-    if config["post-pipeline"]:
+    if config["post-PEPATAC"]:
         os.makedirs("post-processing/temp/%s" % conditions[i], exist_ok=True)
         os.makedirs("post-processing/logs/%s" % samples[i], exist_ok=True)
         os.system("ln -s %s/results_pipeline/%s/peak_calling_%s/%s_peaks_rmBlacklist.narrowPeak post-processing/temp/%s >/dev/null 2>&1" \
@@ -76,7 +76,7 @@ for i in range(0,len(samples)):
         os.system("ln -s %s/pepatac_%s/out/aligned_%s_exact/%s_shift.bed post-processing/temp/coverage >/dev/null 2>&1"\
           % (samplePath, genomeBuild, genomeBuild, sample))
 
-if not (config["post-pipeline"]):
+if not (config["post-PEPATAC"]):
     samplePaths = config["samples"]
     samplePaths = [re.sub(r"\W+$", "", i) for i in samplePaths]
     samples = [i.rsplit('/', 1)[1] for i in samplePaths]
