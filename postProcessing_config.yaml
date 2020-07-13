@@ -12,7 +12,7 @@ sampleCutoff: 0.3
 # This value is a proportion that is used to determine whether a peak is
 # retained for the condition-specific peak sets. See README for more information.
 
-moveOut: TRUE
+moveOut: FALSE
 # Only set to TRUE after the post-processing pipeline has been run successfully!
 projectDir: "/proj/fureylab/projects/ATAC_processing"
 
