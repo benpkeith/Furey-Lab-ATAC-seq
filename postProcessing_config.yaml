@@ -1,22 +1,22 @@
 # PEPATAC 0.9 post-processing pipeline
 # Reference the README for setting up this file.
 
-projectName: DATE_project_name
+projectName: 2020_07_10_IBD_postProcessing
 # If running immediately after PEPATAC, this should be the same as "name" in the
 # PEPTAC_config.yaml file
 
 genomeBuild: hg38
 # Currently supports hg19, hg38, mm9, mm10.
 
-sampleCutoff: 0.5
+sampleCutoff: 0.3
 # This value is a proportion that is used to determine whether a peak is
 # retained for the condition-specific peak sets. See README for more information.
 
-moveOut: FALSE
+moveOut: TRUE
 # Only set to TRUE after the post-processing pipeline has been run successfully!
 projectDir: "/proj/fureylab/projects/ATAC_processing"
 
-post-PEPATAC: TRUE
+post-PEPATAC: FALSE
 # TRUE is run immediately running after PEPATAC.
 # If TRUE, samples should consist of sample numbers.
 # If FALSE, samples consist of paths to sample PEPATAC directories.
@@ -42,3 +42,17 @@ conditions:
 #   - /proj/fureylab/data/ATAC/human/colon_tissue/CD_uninflamed/187
 #   - /proj/fureylab/data/ATAC/human/colon_tissue/nonIBD/206
 #   - /proj/fureylab/data/ATAC/human/colon_tissue/nonIBD/208
+
+# Filter samples for peak set generation using TSS_score
+# The sampleCutoff value will be used for samples with TSS above the threshold
+# that is set below
+# NOTE: all samples will be used in count matrix generation!
+filterBeforePeaks: FALSE
+TSSthres: 4
+
+# Like conditions, the TSS order must match the samples.
+TSS:
+  - 5.7
+  - 3.7
+  - 5.4
+  - 8.3

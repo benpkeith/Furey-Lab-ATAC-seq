@@ -1,7 +1,6 @@
 # Ben Keith
-# Last updated 2020.06.09
-# Furey Lab Pipeline 2020
-# Snakemake 1.1
+# Last updated 2020.07.11
+# Furey Lab ATAC post-processing Pipeline 2020
 
 ########################
 #### Initial set up ####
@@ -21,20 +20,23 @@ configFilename = "postProcessing_config.yaml"
 today = date.today()
 baseDir = os.getcwd()
 
-samples = config["samples"]
-conditions = config["conditions"]
+samples_all = config["samples"]
+conditions_all = config["conditions"]
 genomeBuild = config["genomeBuild"]
 
 # check number of samples to use as threshold from lowest sample number conditions
-conditionNp = numpy.array(conditions)
-unique_elements, counts_elements = numpy.unique(conditionNp, return_counts=True)
-minCondition = min(counts_elements)
-
-#creating soft-links to Files and directories
-
-os.makedirs("post-processing/temp/coverage", exist_ok=True)
-os.makedirs("post-processing/peakFiles", exist_ok=True)
-os.makedirs("post-processing/countMatrices", exist_ok=True)
+if config["filterBeforePeaks"]:
+    TSS = config["TSS"]
+    TSSindex = [i for i in range(len(TSS)) if TSS[i] > config["TSSthres"]]
+    samples = [samples_all[i] for i in TSSindex]
+    conditions = [conditions_all[i] for i in TSSindex]
+    conditionNp = numpy.array(conditions)
+    unique_elements, counts_elements = numpy.unique(conditionNp, return_counts=True)
+    minCondition = min(counts_elements)
+else:
+    conditionNp = numpy.array(conditions_all)
+    unique_elements, counts_elements = numpy.unique(conditionNp, return_counts=True)
+    minCondition = min(counts_elements)
 
 if config["moveOut"]:
     projectDir = "%s/%s" % (config["projectDir"], config["projectName"])
@@ -55,42 +57,75 @@ if config["moveOut"]:
     print("The SystemExit message below this is normal!")
     sys.exit()
 
-for i in range(0,len(samples)):
+#creating soft-links to Files and directories
+os.makedirs("post-processing/temp/coverage", exist_ok=True)
+os.makedirs("post-processing/peakFiles", exist_ok=True)
+os.makedirs("post-processing/countMatrices", exist_ok=True)
+
+for i in range(0,len(samples_all)):
     if config["post-PEPATAC"]:
         os.makedirs("post-processing/temp/%s" % conditions[i], exist_ok=True)
         os.makedirs("post-processing/logs/%s" % samples[i], exist_ok=True)
-        os.system("ln -s %s/results_pipeline/%s/peak_calling_%s/%s_peaks_rmBlacklist.narrowPeak post-processing/temp/%s >/dev/null 2>&1" \
-          % (baseDir, samples[i], genomeBuild, samples[i], conditions[i]))
+        if not config["filterBeforePeaks"]:
+            os.system("ln -s %s/results_pipeline/%s/peak_calling_%s/%s_peaks_rmBlacklist.narrowPeak post-processing/temp/%s >/dev/null 2>&1" \
+              % (baseDir, samples_all[i], genomeBuild, samples_all[i], conditions_all[i]))
+
         os.system("ln -s %s/results_pipeline/%s/aligned_%s_exact/%s_shift.bed post-processing/temp/coverage >/dev/null 2>&1"\
-          % (baseDir, samples[i], genomeBuild, samples[i]))
+          % (baseDir, samples_all[i], genomeBuild, samples_all[i]))
     else:
-        samplePath = samples[i]
+        samplePath = samples_all[i]
         samplePath = re.sub(r"\W+$", "", samplePath)
         sample = samplePath.rsplit('/', 1)[1]
 
-        os.makedirs("post-processing/temp/%s" % conditions[i], exist_ok=True)
+        os.makedirs("post-processing/temp/%s" % conditions_all[i], exist_ok=True)
         os.makedirs("post-processing/logs/%s" % sample, exist_ok=True)
 
-        os.system("ln -s %s/pepatac_%s/out/peak_calling_%s/%s_peaks_rmBlacklist.narrowPeak post-processing/temp/%s >/dev/null 2>&1" \
-          % (samplePath, genomeBuild, genomeBuild, sample, conditions[i]))
+        if not config["filterBeforePeaks"]:
+            os.system("ln -s %s/pepatac_%s/out/peak_calling_%s/%s_peaks_rmBlacklist.narrowPeak post-processing/temp/%s >/dev/null 2>&1" \
+              % (samplePath, genomeBuild, genomeBuild, sample, conditions_all[i]))
+
         os.system("ln -s %s/pepatac_%s/out/aligned_%s_exact/%s_shift.bed post-processing/temp/coverage >/dev/null 2>&1"\
           % (samplePath, genomeBuild, genomeBuild, sample))
 
+if config["filterBeforePeaks"]:
+    for i in range(0, len(samples)):
+        if config["post-PEPATAC"]:
+            os.system("ln -s %s/results_pipeline/%s/peak_calling_%s/%s_peaks_rmBlacklist.narrowPeak post-processing/temp/%s >/dev/null 2>&1" \
+              % (baseDir, samples[i], genomeBuild, samples[i], conditions[i]))
+        else:
+            samplePath = samples[i]
+            samplePath = re.sub(r"\W+$", "", samplePath)
+            sample = samplePath.rsplit('/', 1)[1]
+
+            os.system("ln -s %s/pepatac_%s/out/peak_calling_%s/%s_peaks_rmBlacklist.narrowPeak post-processing/temp/%s >/dev/null 2>&1" \
+              % (samplePath, genomeBuild, genomeBuild, sample, conditions[i]))
+
 if not (config["post-PEPATAC"]):
-    samplePaths = config["samples"]
-    samplePaths = [re.sub(r"\W+$", "", i) for i in samplePaths]
-    samples = [i.rsplit('/', 1)[1] for i in samplePaths]
+    if config["filterBeforePeaks"]:
+        samplePaths = [re.sub(r"\W+$", "", i) for i in samples]
+        samples = [i.rsplit('/', 1)[1] for i in samplePaths]
+    samplePaths_all = config["samples"]
+    samplePaths_all = [re.sub(r"\W+$", "", i) for i in samplePaths_all]
+    samples_all = [i.rsplit('/', 1)[1] for i in samplePaths_all]
+
+if not config["filterBeforePeaks"]:
+    samples = samples_all
+    conditions = conditions_all
+
+#########################
+#### SNAKEMAKE RULES ####
+#########################
 
 rule all:
     input:
         expand("post-processing/temp/{condition}/{sample}_peaks_rmBlacklist.fixed.narrowPeak.cut.named",
           zip, sample = samples, condition = conditions),
         expand("post-processing/peakFiles/{condition}.peaks.bed", condition = conditions),
-        expand("post-processing/temp/coverage/{sample}_shift.fixed.bed",
-          sample = samples),
+        expand("post-processing/temp/coverage/{sample_all}_shift.fixed.bed",
+          sample_all = samples_all),
         "post-processing/peakFiles/peaks.300bp.bed",
-        expand("post-processing/logs/{sample}/coverageSubmitted_done.flag",
-          sample = samples),
+        expand("post-processing/logs/{sample_all}/coverageSubmitted_done.flag",
+          sample_all = samples_all),
         "post-processing/logs/countMatSubmitted_done.flag"
 
 
@@ -107,11 +142,11 @@ rule fixNarrowPeak:
 
 rule fixBed:
     input:
-        "post-processing/temp/coverage/{sample}_shift.bed"
+        "post-processing/temp/coverage/{sample_all}_shift.bed"
     output:
-        "post-processing/temp/coverage/{sample}_shift.fixed.bed"
+        "post-processing/temp/coverage/{sample_all}_shift.fixed.bed"
     params:
-        temp = "post-processing/temp/coverage/{sample}_shift.temp.bed"
+        temp = "post-processing/temp/coverage/{sample_all}_shift.temp.bed"
     shell:
         """
         egrep -v 'chr\w{{1,2}}_' {input} > {params.temp}
@@ -202,7 +237,7 @@ rule finalPeakSets:
 
 rule coverageFiles:
     input:
-        bed = "post-processing/temp/coverage/{sample}_shift.fixed.bed",
+        bed = "post-processing/temp/coverage/{sample_all}_shift.fixed.bed",
         peaks300 = "post-processing/peakFiles/peaks.300bp.bed",
         peaks300P = "post-processing/peakFiles/peaks.300bp.promoter.bed",
         peaks300D = "post-processing/peakFiles/peaks.300bp.distal.bed",
@@ -210,43 +245,43 @@ rule coverageFiles:
         peaksP = "post-processing/peakFiles/peaks.promoter.bed",
         peaksD = "post-processing/peakFiles/peaks.distal.bed"
     output:
-        touch("post-processing/logs/{sample}/coverageSubmitted_done.flag")
+        touch("post-processing/logs/{sample_all}/coverageSubmitted_done.flag")
     shell:
         """
         module load bedtools/2.29
         #300bp coverage
         sbatch --mem 75G --time 2-0 -J winCovMatP \
-          -o post-processing/logs/{wildcards.sample}/covP.win.out \
-          --wrap="bedtools coverage -counts -b {input.bed} -a {input.peaks300} \
-          > post-processing/temp/coverage/{wildcards.sample}.coverage.300bp.promoter.bed"
-        sbatch --mem 75G --time 2-0 -J winCovMatD \
-          -o post-processing/logs/{wildcards.sample}/covD.win.out \
+          -o post-processing/logs/{wildcards.sample_all}/covP.win.out \
           --wrap="bedtools coverage -counts -b {input.bed} -a {input.peaks300P} \
-          > post-processing/temp/coverage/{wildcards.sample}.coverage.300bp.distal.bed"
-        sbatch --mem 75G --time 2-0 -J winCovMat \
-          -o post-processing/logs/{wildcards.sample}/cov.win.out \
+          > post-processing/temp/coverage/{wildcards.sample_all}.coverage.300bp.promoter.bed"
+        sbatch --mem 75G --time 2-0 -J winCovMatD \
+          -o post-processing/logs/{wildcards.sample_all}/covD.win.out \
           --wrap="bedtools coverage -counts -b {input.bed} -a {input.peaks300D} \
-          > post-processing/temp/coverage/{wildcards.sample}.coverage.300bp.bed"
+          > post-processing/temp/coverage/{wildcards.sample_all}.coverage.300bp.distal.bed"
+        sbatch --mem 75G --time 2-0 -J winCovMat \
+          -o post-processing/logs/{wildcards.sample_all}/cov.win.out \
+          --wrap="bedtools coverage -counts -b {input.bed} -a {input.peaks300} \
+          > post-processing/temp/coverage/{wildcards.sample_all}.coverage.300bp.bed"
 
         #peak level coverage
         sbatch --mem 75G --time 2-0 -J peakCovMatP \
-          -o post-processing/logs/{wildcards.sample}/covP.peak.out \
-          --wrap="bedtools coverage -counts -b {input.bed} -a {input.peaks} \
-          > post-processing/temp/coverage/{wildcards.sample}.coverage.peak.promoter.bed"
-        sbatch --mem 75G --time 2-0 -J peakCovMatD \
-          -o post-processing/logs/{wildcards.sample}/covD.peak.out \
+          -o post-processing/logs/{wildcards.sample_all}/covP.peak.out \
           --wrap="bedtools coverage -counts -b {input.bed} -a {input.peaksP} \
-          > post-processing/temp/coverage/{wildcards.sample}.coverage.peak.distal.bed"
-        sbatch --mem 75G --time 2-0 -J peakCovMat \
-          -o post-processing/logs/{wildcards.sample}/cov.peak.out \
+          > post-processing/temp/coverage/{wildcards.sample_all}.coverage.peak.promoter.bed"
+        sbatch --mem 75G --time 2-0 -J peakCovMatD \
+          -o post-processing/logs/{wildcards.sample_all}/covD.peak.out \
           --wrap="bedtools coverage -counts -b {input.bed} -a {input.peaksD} \
-          > post-processing/temp/coverage/{wildcards.sample}.coverage.peak.bed"
+          > post-processing/temp/coverage/{wildcards.sample_all}.coverage.peak.distal.bed"
+        sbatch --mem 75G --time 2-0 -J peakCovMat \
+          -o post-processing/logs/{wildcards.sample_all}/cov.peak.out \
+          --wrap="bedtools coverage -counts -b {input.bed} -a {input.peaks} \
+          > post-processing/temp/coverage/{wildcards.sample_all}.coverage.peak.bed"
         """
 
 rule countMatrix:
     input:
-        expand("post-processing/logs/{sample}/coverageSubmitted_done.flag",
-          sample = samples)
+        expand("post-processing/logs/{sample_all}/coverageSubmitted_done.flag",
+          sample_all = samples_all)
     output:
         touch("post-processing/logs/countMatSubmitted_done.flag")
     shell:

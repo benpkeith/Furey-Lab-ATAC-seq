@@ -10,16 +10,16 @@
     },
     "fixBed":
     {
-        "mem": "10G",
+        "mem": "20G",
         "time": "5:0:0",
         "ntasks": "1",
-        "output": "post-processing/logs/{wildcards.sample}/{rule}.out",
-        "err": "post-processing/logs/{wildcards.sample}/{rule}.err",
+        "output": "post-processing/logs/{wildcards.sample_all}/{rule}.out",
+        "err": "post-processing/logs/{wildcards.sample_all}/{rule}.err",
         "jobname": "{rule}"
     },
     "conditionPeakSets":
     {
-        "mem": "10G",
+        "mem": "25G",
         "time": "5:0:0",
         "ntasks": "1",
         "output": "post-processing/logs/{wildcards.condition}.{rule}.out",
@@ -28,7 +28,7 @@
     },
     "finalPeakSets":
     {
-        "mem": "10G",
+        "mem": "25G",
         "time": "5:0:0",
         "ntasks": "1",
         "output": "post-processing/logs/{rule}.out",
@@ -37,11 +37,20 @@
     },
     "countMatrix":
     {
-        "mem": "10G",
+        "mem": "5G",
         "time": "5:0:0",
         "ntasks": "1",
         "output": "post-processing/logs/{rule}.out",
         "err": "post-processing/logs/{rule}.err",
+        "jobname": "{rule}"
+    },
+    "coverageFiles":
+    {
+        "mem": "5G",
+        "time": "5:0:0",
+        "ntasks": "1",
+        "output": "post-processing/logs/{wildcards.sample_all}/{rule}.out",
+        "err": "post-processing/logs/{wildcards.sample_all}/{rule}.err",
         "jobname": "{rule}"
     }
 }
