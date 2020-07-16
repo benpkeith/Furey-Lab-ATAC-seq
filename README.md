@@ -192,8 +192,10 @@ Before running the pipeline, you will need to set up the configuration file _"po
 - **moveOut** - Set to TRUE after the pipeline is completed to move outputs to the directory specified by the "projectDir" flag
 - **projectDir** - Directory that output files will be moved to. By default this is set to the top level directory where these files should be moved to. If you know specifically where these outputs below, feel free to change this path. Note that the directory that you're point to should already exist.
 - **post-PEPATAC** - Set this to true if you're running immediately after running PEPATAC. If TRUE, the post-processing pipeline will look in results_pipeline for the files it needs.
+- **filterBeforePeaks** - Setting to TRUE will take into account the specified "_TSSthres_" and "_TSS_" scores across input samples to filter samples _before_ generating peak sets. Particularly useful when sample quality is heterogeneous and you want to use a confident peak set to "guide" the coverage matrix generation.
+- **TSSthres** - TSS score threshold to use when subsetting samples. Only applies when filterBeforePeaks is set to TRUE.
 
-<ins>Samples and conditions<ins/>
+<ins>Samples, conditions, and TSS<ins/>
 
 The configuration file contains examples of how these flags should be set up. When post-PEPATAC is set to TRUE, the samples field just needs to contain sample numbers that were used in the PEPATAC pipeline. These should be same as the sample identifiers used in the PEPATAC_annotation file.
 
@@ -226,6 +228,18 @@ conditions:
 ```
 
 The format of this field is will be the same whether post-PEPATAC is set to TRUE or FALSE.
+
+Finally, the TSS section will only be considered when "_filterBeforePeaks_" is set to TRUE. Like the "_conditions_" section, the order of TSS must match the sample order:
+
+```
+TSS:
+  - 5.7
+  - 3.7
+  - 5.4
+  - 8.3
+```
+
+TSS scores can be found in the "stats.tsv" file for each sample that has been run through PEPATAC, and TSS scores for a run of samples can be found in the "\*stats_summary.tsv" file.
 
 ##### Running the pipeline
 

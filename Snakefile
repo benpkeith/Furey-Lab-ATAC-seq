@@ -24,7 +24,12 @@ samples_all = config["samples"]
 conditions_all = config["conditions"]
 genomeBuild = config["genomeBuild"]
 
-# check number of samples to use as threshold from lowest sample number conditions
+
+# Check number of samples to use as threshold from lowest sample number conditions.
+# The filterBeforePeaks condition will take into account the specified TSS
+# threshold if filterBeforePeaks is set to TRUE. Since only samples above the TSS
+# threshold are used in peak set generation, the minCondition argument takes
+# TSS scores into account.
 if config["filterBeforePeaks"]:
     TSS = config["TSS"]
     TSSindex = [i for i in range(len(TSS)) if TSS[i] > config["TSSthres"]]
@@ -38,6 +43,7 @@ else:
     unique_elements, counts_elements = numpy.unique(conditionNp, return_counts=True)
     minCondition = min(counts_elements)
 
+# Logic for moving output files.
 if config["moveOut"]:
     projectDir = "%s/%s" % (config["projectDir"], config["projectName"])
     os.makedirs(projectDir, exist_ok=True)
@@ -62,10 +68,11 @@ os.makedirs("post-processing/temp/coverage", exist_ok=True)
 os.makedirs("post-processing/peakFiles", exist_ok=True)
 os.makedirs("post-processing/countMatrices", exist_ok=True)
 
+#  Pre pipeline soft linking of narrowPeak and shifted bed files
 for i in range(0,len(samples_all)):
     if config["post-PEPATAC"]:
-        os.makedirs("post-processing/temp/%s" % conditions[i], exist_ok=True)
-        os.makedirs("post-processing/logs/%s" % samples[i], exist_ok=True)
+        os.makedirs("post-processing/temp/%s" % conditions_all[i], exist_ok=True)
+        os.makedirs("post-processing/logs/%s" % samples_all[i], exist_ok=True)
         if not config["filterBeforePeaks"]:
             os.system("ln -s %s/results_pipeline/%s/peak_calling_%s/%s_peaks_rmBlacklist.narrowPeak post-processing/temp/%s >/dev/null 2>&1" \
               % (baseDir, samples_all[i], genomeBuild, samples_all[i], conditions_all[i]))
@@ -87,6 +94,8 @@ for i in range(0,len(samples_all)):
         os.system("ln -s %s/pepatac_%s/out/aligned_%s_exact/%s_shift.bed post-processing/temp/coverage >/dev/null 2>&1"\
           % (samplePath, genomeBuild, genomeBuild, sample))
 
+# We only want to use a subset of peak files when filterBefore Peaks is true,
+# This loop deals with this condition.
 if config["filterBeforePeaks"]:
     for i in range(0, len(samples)):
         if config["post-PEPATAC"]:
